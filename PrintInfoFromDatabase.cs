@@ -100,6 +100,7 @@ namespace Lab_1_SQL
 
         static internal void AllCategories(SqlConnection connection)
         {
+            //Ändra så att en category bara visas en gång i listan
             Console.Clear();
             string sqlQuery = "SELECT Category FROM Personnel";
             Console.WriteLine("Categories: ");
@@ -143,5 +144,17 @@ namespace Lab_1_SQL
             }
             Menu.ReturnToMenu();
         }
+
+        //Metod för att visa betyg som satts senaste månaden
+        //(lägg kolumn för datumstämpel på betyg i databasen i Enrollments)
+        //Här får användaren se en lista med alla betyg som satts
+        //senaste månaden där elevens namn, kursens namn och betyget framgår.
+
+
+        //Metod för snittbetyg i en kurs
+        //Hämta en lista med alla kurser och det snittbetyg som eleverna fått
+        //på den kursen samt det högsta och lägsta betyget som någon fått i kursen.
+        //Här får användaren se en lista med alla kurser i databasen, snittbetyget
+        //samt det högsta och lägsta betyget för varje kurs.
     }
 }

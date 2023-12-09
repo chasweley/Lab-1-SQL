@@ -17,13 +17,11 @@ namespace Lab_1_SQL
                 Console.WriteLine("Start menu");
                 Console.WriteLine("1. Get all students" +
                     "\n2. Get all students in a class" +
-                    "\n3. Add new personell" +
-                    "\n4. Get all personell" +
+                    "\n3. Add new personnel" +
+                    "\n4. Get all personnel" +
                     "\n5. Get all grades set within the last month" +
                     "\n6. Average grade per course" +
                     "\n7. Add new student");
-
-                Helpers.EnterOptionMenu();
 
                 switch (Helpers.EnterOptionMenu())
                 {
@@ -34,14 +32,19 @@ namespace Lab_1_SQL
                         PrintInfoFromDatabase.AllStudentsInClass(connection);
                         break;
                     case "3":
+                        AddInfoToDatabase.AddNewPersonnel(connection);
                         break;
                     case "4":
+                        GetPersonnelMenu(connection);
                         break;
                     case "5":
+                        //Hämta alla betyg som satts den senaste månaden
                         break;
                     case "6":
+                        //Snittbetyg per kurs
                         break;
                     case "7":
+                        AddInfoToDatabase.AddNewStudent(connection);
                         break;
                     default:
                         Helpers.InvalidInputMenu();
@@ -52,9 +55,9 @@ namespace Lab_1_SQL
 
         static internal void GetPersonnelMenu(SqlConnection connection)
         {
+            Console.Clear();
             Console.WriteLine("1. Show all personnel" + 
-                "2. Show all personnel in category");
-            Helpers.EnterOptionMenu();
+                "\n2. Show all personnel in category");
 
             switch (Helpers.EnterOptionMenu())
             {
