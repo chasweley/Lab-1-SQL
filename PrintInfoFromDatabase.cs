@@ -10,25 +10,14 @@ namespace Lab_1_SQL
 {
     static internal class PrintInfoFromDatabase
     {
-        //OBS! Användaren får välja om de vill se eleverna sorterade på
-        //för- eller efternamn och om det ska vara stigande eller fallande sortering.
         static internal void AllStudents(SqlConnection connection)
         {
             Console.Clear();
-            using (SqlCommand command = new SqlCommand("SELECT FirstName, LastName FROM Students", connection))
-            {
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
-                        string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
+            string sqlQuery = Menus.SortOrderStudents(connection);
+            Console.WriteLine("All students at school: ");
 
-                        Console.WriteLine($"{firstName} {lastName}");
-                    }
-                }
-            }
-            Menu.ReturnToMenu();
+            Helpers.PrintFirstNameLastName(sqlQuery, connection);
+            Menus.ReturnToMenu();
         }
 
         static internal void AllClasses(SqlConnection connection)
@@ -52,48 +41,23 @@ namespace Lab_1_SQL
 
         static internal void AllStudentsInClass(string input, SqlConnection connection)
         {
+            Console.Clear();
+            Console.WriteLine($"Students in class {input}: ");
             string sqlQuery = "SELECT FirstName, LastName FROM Students JOIN Classes ON Classes.ClassId = Students.ClassId_FK WHERE ClassName = @ClassName";
-            using (SqlCommand studentsInClassCommand = new SqlCommand(sqlQuery, connection))
-            {
-                studentsInClassCommand.Parameters.AddWithValue(@"ClassName", input);
-                Console.Clear();
-                Console.WriteLine($"Students in class {input}: ");
-                using (SqlDataReader reader = studentsInClassCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
-                        string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
-                        Console.WriteLine($"{firstName} {lastName}");
-                    }
-                }
-                
-            }
+            Helpers.PrintFirstNameLastNameDelimiter(@"ClassName", input, sqlQuery, connection);
         }
 
         static internal void AllPersonnel(SqlConnection connection)
         {
             Console.Clear();
-
             string sqlQuery = "SELECT * FROM Personnel";
             Console.WriteLine("All personnel at school: ");
-            using (SqlCommand allPersonnelCommand = new SqlCommand(sqlQuery, connection))
-            {
-                using (SqlDataReader reader = allPersonnelCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
-                        string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
-                        Console.WriteLine($"{firstName} {lastName}");
-                    }
-                }
-            }
-
-            Menu.ReturnToMenu();
+            
+            Helpers.PrintFirstNameLastName(sqlQuery, connection);
+            Menus.ReturnToMenu();
         }
 
-        static internal void AllCategories(SqlConnection connection)
+        static internal void AllPersonnelCategories(SqlConnection connection)
         {
             Console.Clear();
             string sqlQuery = "SELECT * FROM PersonnelCategories";
@@ -107,57 +71,65 @@ namespace Lab_1_SQL
                         string category = reader.GetString(reader.GetOrdinal("CategoryName")).TrimEnd();
                         Console.WriteLine($"{category}");
                     }
-                    reader.Close();
-                    reader.Dispose();
                 }
             }
         }
 
-        static internal void AllPersonnelInCategory (SqlConnection connection) 
+        static internal void AllPersonnelInCategory (string input, SqlConnection connection) 
         {
             Console.Clear();
-            AllCategories(connection);
-
-            //Fixa felhantering
             string sqlQuery = "SELECT FirstName, LastName FROM Personnel JOIN PersonnelCategories ON PersonnelCategories.CategoryId = Personnel.CategoryId_FK WHERE CategoryName = @CategoryName";
-            using (SqlCommand personnelInCategoryCommand = new SqlCommand(sqlQuery, connection))
-            {
-                Console.Write("\nEnter category to view personnel: ");
-                string input = Console.ReadLine();
+            Console.WriteLine($"Personnel in category {input}: ");
+            Helpers.PrintFirstNameLastNameDelimiter(@"CategoryName", input, sqlQuery, connection);
+        }
 
-                personnelInCategoryCommand.Parameters.AddWithValue(@"CategoryName", input);
-                Console.Clear();
-                Console.WriteLine($"Personnel in category {input}: ");
-                using (SqlDataReader reader = personnelInCategoryCommand.ExecuteReader())
+        static internal void GradesSetLatestMonth(SqlConnection connection)
+        {
+            Console.Clear();
+
+            string sqlQuery = "SELECT FirstName, LastName, CourseName, Grade FROM Enrollments JOIN Students ON Enrollments.StudentId_FK = Students.StudentId JOIN Courses ON Enrollments.CourseId_FK = Courses.CourseId WHERE GradeSetDate >= DATEADD(MONTH, -1, GETDATE())";
+            using (SqlCommand gradesSetLatestMonthCommand = new SqlCommand(sqlQuery, connection))
+            {
+                Console.WriteLine("Grades set latest month:");
+
+                using (SqlDataReader reader = gradesSetLatestMonthCommand.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
                         string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
-                        Console.WriteLine($"{firstName} {lastName}");
+                        string courseName = reader.GetString(reader.GetOrdinal("CourseName")).TrimEnd();
+                        int grade = reader.GetInt32(reader.GetOrdinal("Grade"));
+                        Console.WriteLine($"{firstName} {lastName}s grade on the {courseName} course: {grade}");
                     }
-                    reader.Close();
-                    reader.Dispose();
                 }
             }
-            Menu.ReturnToMenu();
+            Menus.ReturnToMenu();
         }
 
-        //Metod för att visa betyg som satts senaste månaden
-        //(lägg kolumn för datumstämpel på betyg i databasen i Enrollments)
-        //Här får användaren se en lista med alla betyg som satts
-        //senaste månaden där elevens namn, kursens namn och betyget framgår.
-
-        static internal void GradesSetLatestMonth(SqlConnection connection)
+        static internal void AverageGradeInCourse(SqlConnection connection)
         {
+            Console.Clear();
 
+            string sqlQuery = "SELECT CourseName, CAST(AVG(Grade) AS DECIMAL(10,2)) AS 'AverageGrade', MIN(Grade) AS 'MinGrade', MAX(Grade) AS 'MaxGrade' FROM Enrollments JOIN Courses ON Enrollments.CourseId_FK = Courses.CourseId GROUP BY CourseName";
+            using (SqlCommand gradesSetLatestMonthCommand = new SqlCommand(sqlQuery, connection))
+            {
+                Console.WriteLine("Average, minimum and maximum grade students have received per course:");
+
+                using (SqlDataReader reader = gradesSetLatestMonthCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string courseName = reader.GetString(reader.GetOrdinal("CourseName")).TrimEnd();
+                        int minGrade = reader.GetInt32(reader.GetOrdinal("MinGrade"));
+                        int maxGrade = reader.GetInt32(reader.GetOrdinal("MaxGrade"));
+                        decimal avgGrade = reader.GetDecimal(reader.GetOrdinal("AverageGrade"));
+                        
+                        Console.WriteLine($"{courseName}: Average {avgGrade} - Minimum {minGrade} - Maximum {maxGrade}");
+                    }
+                }
+            }
+            Menus.ReturnToMenu();
         }
-
-
-        //Metod för snittbetyg i en kurs
-        //Hämta en lista med alla kurser och det snittbetyg som eleverna fått
-        //på den kursen samt det högsta och lägsta betyget som någon fått i kursen.
-        //Här får användaren se en lista med alla kurser i databasen, snittbetyget
-        //samt det högsta och lägsta betyget för varje kurs.
     }
 }
