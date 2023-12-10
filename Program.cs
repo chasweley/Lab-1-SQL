@@ -15,7 +15,7 @@ namespace Lab_1_SQL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                Menu.StartMenu(connection);
+                Menus.StartMenu(connection);
             }
         }
     }
