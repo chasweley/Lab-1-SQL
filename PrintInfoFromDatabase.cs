@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Lab_1_SQL
 {
+    //Prints information from database depending on user choice in menu
     static internal class PrintInfoFromDatabase
     {
+        //Prints all students at the school
         static internal void AllStudents(SqlConnection connection)
         {
             Console.Clear();
@@ -17,9 +19,10 @@ namespace Lab_1_SQL
             Console.WriteLine("All students at school: ");
 
             Helpers.PrintFirstNameLastName(sqlQuery, connection);
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
 
+        //Prints all classes at the school
         static internal void AllClasses(SqlConnection connection)
         {
             Console.Clear();
@@ -39,14 +42,16 @@ namespace Lab_1_SQL
             }
         }
 
+        //Prints all students in a specific class
         static internal void AllStudentsInClass(string input, SqlConnection connection)
         {
             Console.Clear();
             Console.WriteLine($"Students in class {input}: ");
             string sqlQuery = "SELECT FirstName, LastName FROM Students JOIN Classes ON Classes.ClassId = Students.ClassId_FK WHERE ClassName = @ClassName";
-            Helpers.PrintFirstNameLastNameDelimiter(@"ClassName", input, sqlQuery, connection);
+            Helpers.PrintFirstNameLastNameDelimiter("@ClassName", input, sqlQuery, connection);
         }
 
+        //Prints all personnel at the school
         static internal void AllPersonnel(SqlConnection connection)
         {
             Console.Clear();
@@ -54,9 +59,10 @@ namespace Lab_1_SQL
             Console.WriteLine("All personnel at school: ");
             
             Helpers.PrintFirstNameLastName(sqlQuery, connection);
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
 
+        //Prints all categories
         static internal void AllPersonnelCategories(SqlConnection connection)
         {
             Console.Clear();
@@ -75,6 +81,7 @@ namespace Lab_1_SQL
             }
         }
 
+        //Prints all personnel in a specific category
         static internal void AllPersonnelInCategory (string input, SqlConnection connection) 
         {
             Console.Clear();
@@ -83,6 +90,7 @@ namespace Lab_1_SQL
             Helpers.PrintFirstNameLastNameDelimiter(@"CategoryName", input, sqlQuery, connection);
         }
 
+        //Prints all grades set the latest month with info on student and course
         static internal void GradesSetLatestMonth(SqlConnection connection)
         {
             Console.Clear();
@@ -104,13 +112,16 @@ namespace Lab_1_SQL
                     }
                 }
             }
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
 
-        static internal void AverageGradeInCourse(SqlConnection connection)
+        //Prints average, minimum and maximum grades for specific course
+        static internal void AverageMinMaxGradeInCourse(SqlConnection connection)
         {
             Console.Clear();
 
+            //Change average grade from int to decimal (2 decimals) to more accurately show number
+            //Naming the new "columns" for cleaner look
             string sqlQuery = "SELECT CourseName, CAST(AVG(Grade) AS DECIMAL(10,2)) AS 'AverageGrade', MIN(Grade) AS 'MinGrade', MAX(Grade) AS 'MaxGrade' FROM Enrollments JOIN Courses ON Enrollments.CourseId_FK = Courses.CourseId GROUP BY CourseName";
             using (SqlCommand gradesSetLatestMonthCommand = new SqlCommand(sqlQuery, connection))
             {
@@ -129,7 +140,7 @@ namespace Lab_1_SQL
                     }
                 }
             }
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
     }
 }

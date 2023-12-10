@@ -30,7 +30,7 @@ namespace Lab_1_SQL
                 Console.Clear();
                 Console.WriteLine($"{firstName} {lastName} was added to database.");
             }
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
 
         //Method to add new student to database
@@ -58,7 +58,7 @@ namespace Lab_1_SQL
                 Console.Clear();
                 Console.WriteLine($"Student {firstName} {lastName} with birth date {birthDateOnly} was added to database.");
             }
-            Menus.ReturnToMenu();
+            Helpers.ReturnToMenu();
         }
     }
 }

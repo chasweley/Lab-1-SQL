@@ -7,13 +7,21 @@ using System.Threading.Tasks;
 
 namespace Lab_1_SQL
 {
+    //Class of methods to help and make it "easier"
     static internal class Helpers
     {
+        static internal void ReturnToMenu()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Press ENTER to return to menu");
+            Console.ReadLine();
+            Console.Clear();
+        }
+
         static internal string EnterOptionMenu()
         {
-            Console.Write("\nEnter menu option number to proceed: ");
+            Console.Write("\nEnter option number to proceed: ");
             string input = Console.ReadLine();
-
             return input;
         }
 
@@ -42,6 +50,8 @@ namespace Lab_1_SQL
             }
         }
         
+        //Method to print first name and last name with a delimiter,
+        //ex. all people in a specific Class och Category
         static internal void PrintFirstNameLastNameDelimiter(string delimiter, string input, string sqlQuery, SqlConnection connection)
         {
             using (SqlCommand command = new SqlCommand(sqlQuery, connection))
@@ -60,6 +70,7 @@ namespace Lab_1_SQL
             }
         }
 
+        //Checks the database if user input exists
         static internal bool CheckIfClassExist(string input, SqlConnection connection)
         {
             string sqlQuery = "SELECT * FROM Classes WHERE ClassName = @ClassName";
@@ -103,6 +114,5 @@ namespace Lab_1_SQL
                 }
             }
         }
-
     }
 }

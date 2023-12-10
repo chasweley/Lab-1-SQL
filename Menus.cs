@@ -10,6 +10,7 @@ namespace Lab_1_SQL
 {
     static internal class Menus
     {
+        //Method for start menu to view all options
         static internal void StartMenu(SqlConnection connection)
         {
             while (true)
@@ -41,7 +42,7 @@ namespace Lab_1_SQL
                         PrintInfoFromDatabase.GradesSetLatestMonth(connection);
                         break;
                     case "6":
-                        PrintInfoFromDatabase.AverageGradeInCourse(connection);
+                        PrintInfoFromDatabase.AverageMinMaxGradeInCourse(connection);
                         break;
                     case "7":
                         AddInfoToDatabase.AddNewStudent(connection);
@@ -53,6 +54,7 @@ namespace Lab_1_SQL
             }
         }
 
+        //Method to send the right query to database depending on user choice of sorting info
         static internal string SortOrderStudents(SqlConnection connection)
         {
             while (true)
@@ -61,9 +63,9 @@ namespace Lab_1_SQL
                 Console.WriteLine("Would you like to sort students by:" +
                     "\n1. First name" +
                     "\n2. Last name");
-                Console.Write("Write number option here: ");
-                string firstOrLastNameOrder = Console.ReadLine();
+                string firstOrLastNameOrder = Helpers.EnterOptionMenu();
 
+                //If-statement to make sure only valid input by user to proceed to next choice
                 if (firstOrLastNameOrder == "1" || firstOrLastNameOrder == "2")
                 {
                     while (true)
@@ -72,12 +74,12 @@ namespace Lab_1_SQL
                         Console.WriteLine("Would you like to sort the name in:" +
                             "\n1. Ascending order" +
                             "\n2. Descending order");
-                        Console.Write("Write number option here: ");
-                        string ascendingOrDescendingOrder = Console.ReadLine();
+                        string ascendingOrDescendingOrder = Helpers.EnterOptionMenu();
 
+                        //If-statement to make sure only valid input by user to proceed
                         if (ascendingOrDescendingOrder == "1" || ascendingOrDescendingOrder == "2")
                         {
-
+                            //Returns query depending on choice so user gets correct information
                             if (firstOrLastNameOrder == "1" && ascendingOrDescendingOrder == "1")
                             {
                                 return "SELECT FirstName, LastName FROM Students ORDER BY FirstName";
@@ -109,6 +111,7 @@ namespace Lab_1_SQL
 
         }
 
+        //Method for user to choose which class they want to see students from
         static internal void ChooseClass(SqlConnection connection) 
         {
             while (true)
@@ -117,10 +120,11 @@ namespace Lab_1_SQL
                 Console.Write("\nWrite class to show students in that class: ");
                 string input = Console.ReadLine().ToUpper();
 
+                //If-statement to check if user input is valid
                 if (Helpers.CheckIfClassExist(input, connection))
                 {
                     PrintInfoFromDatabase.AllStudentsInClass(input, connection);
-                    ReturnToMenu();
+                    Helpers.ReturnToMenu();
                     break;
                 }
                 else
@@ -130,6 +134,7 @@ namespace Lab_1_SQL
             }
         }
 
+        //Method to go into view personnel, either all or for a specific category
         static internal void GetPersonnelMenu(SqlConnection connection)
         {
             Console.Clear();
@@ -150,18 +155,19 @@ namespace Lab_1_SQL
             }
         }
 
+        //Method for user to choose which category they want to view personnel from
         static internal void ChooseCategory(SqlConnection connection)
         {
             while (true)
             {
                 PrintInfoFromDatabase.AllPersonnelCategories(connection);
-                Console.Write("\nEnter category to view personnel: ");
-                string input = Console.ReadLine();
+                string input = Helpers.EnterOptionMenu();
 
+                //If-statement to check if user input is valid to be able to proceed
                 if (Helpers.CheckIfCategoryExist(input, connection))
                 {
                     PrintInfoFromDatabase.AllPersonnelInCategory(input, connection);
-                    ReturnToMenu();
+                    Helpers.ReturnToMenu();
                     break;
                 }
                 else
@@ -169,14 +175,6 @@ namespace Lab_1_SQL
                     Helpers.InvalidInput();
                 }
             }
-        }
-
-        static internal void ReturnToMenu()
-        {
-            Console.WriteLine();
-            Console.WriteLine("Press ENTER to return to menu");
-            Console.ReadLine();
-            Console.Clear();
         }
     }
 }

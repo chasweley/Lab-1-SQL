@@ -6,7 +6,7 @@ namespace Lab_1_SQL
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to The School!");
+            Console.WriteLine("Welcome to the School!");
             Thread.Sleep(2000);
             Console.Clear();
 
@@ -15,6 +15,7 @@ namespace Lab_1_SQL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
+                //Opens menu and starts program
                 Menus.StartMenu(connection);
             }
         }
