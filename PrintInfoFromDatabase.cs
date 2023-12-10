@@ -50,16 +50,11 @@ namespace Lab_1_SQL
             }
         }
 
-        static internal void AllStudentsInClass(SqlConnection connection)
+        static internal void AllStudentsInClass(string input, SqlConnection connection)
         {
-            AllClasses(connection);
-            //Fixa felhantering
             string sqlQuery = "SELECT FirstName, LastName FROM Students JOIN Classes ON Classes.ClassId = Students.ClassId_FK WHERE ClassName = @ClassName";
-            using (SqlCommand studentsInClassCommand = new SqlCommand(sqlQuery, connection)) 
+            using (SqlCommand studentsInClassCommand = new SqlCommand(sqlQuery, connection))
             {
-                Console.Write("\nWrite class to show students in that class: ");
-                string input = Console.ReadLine().ToUpper();
-
                 studentsInClassCommand.Parameters.AddWithValue(@"ClassName", input);
                 Console.Clear();
                 Console.WriteLine($"Students in class {input}: ");
@@ -71,9 +66,9 @@ namespace Lab_1_SQL
                         string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
                         Console.WriteLine($"{firstName} {lastName}");
                     }
-                }                
+                }
+                
             }
-            Menu.ReturnToMenu();
         }
 
         static internal void AllPersonnel(SqlConnection connection)
@@ -100,9 +95,8 @@ namespace Lab_1_SQL
 
         static internal void AllCategories(SqlConnection connection)
         {
-            //Ändra så att en category bara visas en gång i listan
             Console.Clear();
-            string sqlQuery = "SELECT Category FROM Personnel";
+            string sqlQuery = "SELECT * FROM PersonnelCategories";
             Console.WriteLine("Categories: ");
             using (SqlCommand allCategoriesCommand = new SqlCommand(sqlQuery, connection))
             {
@@ -110,9 +104,11 @@ namespace Lab_1_SQL
                 {
                     while (reader.Read())
                     {
-                        string category = reader.GetString(reader.GetOrdinal("Category")).TrimEnd();
+                        string category = reader.GetString(reader.GetOrdinal("CategoryName")).TrimEnd();
                         Console.WriteLine($"{category}");
                     }
+                    reader.Close();
+                    reader.Dispose();
                 }
             }
         }
@@ -123,13 +119,13 @@ namespace Lab_1_SQL
             AllCategories(connection);
 
             //Fixa felhantering
-            string sqlQuery = "SELECT FirstName, LastName FROM Personnel WHERE Category = @Category";
+            string sqlQuery = "SELECT FirstName, LastName FROM Personnel JOIN PersonnelCategories ON PersonnelCategories.CategoryId = Personnel.CategoryId_FK WHERE CategoryName = @CategoryName";
             using (SqlCommand personnelInCategoryCommand = new SqlCommand(sqlQuery, connection))
             {
                 Console.Write("\nEnter category to view personnel: ");
                 string input = Console.ReadLine();
 
-                personnelInCategoryCommand.Parameters.AddWithValue(@"Category", input);
+                personnelInCategoryCommand.Parameters.AddWithValue(@"CategoryName", input);
                 Console.Clear();
                 Console.WriteLine($"Personnel in category {input}: ");
                 using (SqlDataReader reader = personnelInCategoryCommand.ExecuteReader())
@@ -140,6 +136,8 @@ namespace Lab_1_SQL
                         string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
                         Console.WriteLine($"{firstName} {lastName}");
                     }
+                    reader.Close();
+                    reader.Dispose();
                 }
             }
             Menu.ReturnToMenu();
@@ -149,6 +147,11 @@ namespace Lab_1_SQL
         //(lägg kolumn för datumstämpel på betyg i databasen i Enrollments)
         //Här får användaren se en lista med alla betyg som satts
         //senaste månaden där elevens namn, kursens namn och betyget framgår.
+
+        static internal void GradesSetLatestMonth(SqlConnection connection)
+        {
+
+        }
 
 
         //Metod för snittbetyg i en kurs
