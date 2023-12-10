@@ -29,7 +29,7 @@ namespace Lab_1_SQL
                         PrintInfoFromDatabase.AllStudents(connection);
                         break;
                     case "2":
-                        PrintInfoFromDatabase.AllStudentsInClass(connection);
+                        ChooseClass(connection);
                         break;
                     case "3":
                         AddInfoToDatabase.AddNewPersonnel(connection);
@@ -49,6 +49,27 @@ namespace Lab_1_SQL
                     default:
                         Helpers.InvalidInputMenu();
                         break;
+                }
+            }
+        }
+
+        static internal void ChooseClass(SqlConnection connection) 
+        {
+            while (true)
+            {
+                PrintInfoFromDatabase.AllClasses(connection);
+                Console.Write("\nWrite class to show students in that class: ");
+                string input = Console.ReadLine().ToUpper();
+
+                if (Helpers.CheckIfClassExist(input, connection))
+                {
+                    PrintInfoFromDatabase.AllStudentsInClass(input, connection);
+                    ReturnToMenu();
+                    break;
+                }
+                else
+                {
+                    Helpers.InvalidInputMenu();
                 }
             }
         }
