@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,27 @@ namespace Lab_1_SQL
             Console.WriteLine("Invalid input.");
             Thread.Sleep(2000);
             Console.Clear();
+        }
+
+
+        static internal bool CheckIfClassExist(string input, SqlConnection connection)
+        {
+            string sqlQuery = "SELECT * FROM Classes WHERE ClassName = @ClassName";
+            SqlCommand checkClassName = new SqlCommand(sqlQuery, connection);
+            checkClassName.Parameters.AddWithValue("@ClassName", input);
+            SqlDataReader reader = checkClassName.ExecuteReader();
+            if (reader.HasRows)
+            {
+                reader.Close();
+                reader.Dispose();
+                return true;
+            }
+            else
+            {
+                reader.Close();
+                reader.Dispose();
+                return false;
+            }
         }
 
     }
