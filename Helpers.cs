@@ -17,7 +17,7 @@ namespace Lab_1_SQL
             return input;
         }
 
-        static internal void InvalidInputMenu() 
+        static internal void InvalidInput() 
         {
             Console.Clear();
             Console.WriteLine("Invalid input.");
@@ -25,24 +25,82 @@ namespace Lab_1_SQL
             Console.Clear();
         }
 
+        static internal void PrintFirstNameLastName(string sqlQuery, SqlConnection connection) 
+        {
+            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
+                        string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
+
+                        Console.WriteLine($"{firstName} {lastName}");
+                    }
+                }
+            }
+        }
+        
+        static internal void PrintFirstNameLastNameDelimiter(string delimiter, string input, string sqlQuery, SqlConnection connection)
+        {
+            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+            {
+                command.Parameters.AddWithValue(delimiter, input);
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string firstName = reader.GetString(reader.GetOrdinal("FirstName")).TrimEnd();
+                        string lastName = reader.GetString(reader.GetOrdinal("LastName")).TrimEnd();
+
+                        Console.WriteLine($"{firstName} {lastName}");
+                    }
+                }
+            }
+        }
 
         static internal bool CheckIfClassExist(string input, SqlConnection connection)
         {
             string sqlQuery = "SELECT * FROM Classes WHERE ClassName = @ClassName";
-            SqlCommand checkClassName = new SqlCommand(sqlQuery, connection);
-            checkClassName.Parameters.AddWithValue("@ClassName", input);
-            SqlDataReader reader = checkClassName.ExecuteReader();
-            if (reader.HasRows)
+
+            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
             {
-                reader.Close();
-                reader.Dispose();
-                return true;
+                command.Parameters.AddWithValue("@ClassName", input);
+                
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
-            else
+        }
+
+        static internal bool CheckIfCategoryExist(string input, SqlConnection connection)
+        {
+            string sqlQuery = "SELECT * FROM PersonnelCategories WHERE CategoryName = @CategoryName";
+            
+            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
             {
-                reader.Close();
-                reader.Dispose();
-                return false;
+                command.Parameters.AddWithValue("@CategoryName", input);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
