@@ -16,6 +16,7 @@ namespace Lab_1_SQL
         {
             Console.Clear();
             string sqlQuery = Menus.SortOrderStudents(connection);
+            Console.Clear();
             Console.WriteLine("All students at school: ");
 
             Helpers.PrintFirstNameLastName(sqlQuery, connection);
@@ -66,7 +67,7 @@ namespace Lab_1_SQL
         static internal void AllPersonnelCategories(SqlConnection connection)
         {
             Console.Clear();
-            string sqlQuery = "SELECT * FROM PersonnelCategories";
+            string sqlQuery = "SELECT DISTINCT Category FROM Personnel WHERE Category is not null";
             Console.WriteLine("Categories: ");
             using (SqlCommand allCategoriesCommand = new SqlCommand(sqlQuery, connection))
             {
@@ -74,7 +75,7 @@ namespace Lab_1_SQL
                 {
                     while (reader.Read())
                     {
-                        string category = reader.GetString(reader.GetOrdinal("CategoryName")).TrimEnd();
+                        string category = reader.GetString(reader.GetOrdinal("Category")).TrimEnd();
                         Console.WriteLine($"{category}");
                     }
                 }
@@ -85,9 +86,9 @@ namespace Lab_1_SQL
         static internal void AllPersonnelInCategory (string input, SqlConnection connection) 
         {
             Console.Clear();
-            string sqlQuery = "SELECT FirstName, LastName FROM Personnel JOIN PersonnelCategories ON PersonnelCategories.CategoryId = Personnel.CategoryId_FK WHERE CategoryName = @CategoryName";
+            string sqlQuery = "SELECT FirstName, LastName, Category FROM Personnel WHERE Category = @Category";
             Console.WriteLine($"Personnel in category {input}: ");
-            Helpers.PrintFirstNameLastNameDelimiter(@"CategoryName", input, sqlQuery, connection);
+            Helpers.PrintFirstNameLastNameDelimiter("@Category", input, sqlQuery, connection);
         }
 
         //Prints all grades set the latest month with info on student and course
@@ -136,7 +137,10 @@ namespace Lab_1_SQL
                         int maxGrade = reader.GetInt32(reader.GetOrdinal("MaxGrade"));
                         decimal avgGrade = reader.GetDecimal(reader.GetOrdinal("AverageGrade"));
                         
-                        Console.WriteLine($"{courseName}: Average {avgGrade} - Minimum {minGrade} - Maximum {maxGrade}");
+                        Console.WriteLine($"\n{courseName}" +
+                            $"\nAverage: {avgGrade}" +
+                            $"\nMinimum: {minGrade}" +
+                            $"\nMaximum: {maxGrade}");
                     }
                 }
             }
