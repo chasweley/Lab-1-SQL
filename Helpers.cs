@@ -70,7 +70,7 @@ namespace Lab_1_SQL
             }
         }
 
-        //Checks the database if user input exists
+        //Checks if user input exist as value in database
         static internal bool CheckIfClassExist(string input, SqlConnection connection)
         {
             string sqlQuery = "SELECT * FROM Classes WHERE ClassName = @ClassName";
@@ -95,11 +95,11 @@ namespace Lab_1_SQL
 
         static internal bool CheckIfCategoryExist(string input, SqlConnection connection)
         {
-            string sqlQuery = "SELECT * FROM PersonnelCategories WHERE CategoryName = @CategoryName";
+            string sqlQuery = "SELECT Category FROM Personnel WHERE Category = @Category";
             
             using (SqlCommand command = new SqlCommand(sqlQuery, connection))
             {
-                command.Parameters.AddWithValue("@CategoryName", input);
+                command.Parameters.AddWithValue("@Category", input);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -112,6 +112,17 @@ namespace Lab_1_SQL
                         return false;
                     }
                 }
+            }
+        }
+
+        static internal int GetClassId(string input, SqlConnection connection)
+        {
+            string sqlQuery = "SELECT ClassId FROM Classes WHERE ClassName = @ClassName";
+
+            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+            {
+                command.Parameters.AddWithValue("@ClassName", input);
+                return (int)command.ExecuteScalar();
             }
         }
     }
